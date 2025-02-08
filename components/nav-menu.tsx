@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/navigation-menu"
 import { cn } from "@/lib/utils"
 import { Pen, FileText, Boxes, Book, Send, Settings2, FormInput, AtSign } from "lucide-react"
+import { useState } from "react"
 
 const contentCreation = [
   {
@@ -72,6 +73,8 @@ const moreTools = [
 ]
 
 export function NavMenu() {
+  const [selectedContentCreation, setSelectedContentCreation] = useState<string | null>(null)
+
   return (
     <NavigationMenu className="relative">
       <NavigationMenuList>
@@ -85,17 +88,20 @@ export function NavMenu() {
                     CONTENT CREATION
                   </div>
                   {contentCreation.map((item) => (
-                    <Link
+                    <button
                       key={item.title}
-                      href="#"
-                      className="flex items-start space-x-3 p-3 rounded-lg hover:bg-accent"
+                      onClick={() => setSelectedContentCreation(item.title)}
+                      className={cn(
+                        "flex items-start space-x-3 p-3 rounded-lg hover:bg-accent text-left",
+                        selectedContentCreation === item.title && "bg-accent",
+                      )}
                     >
                       <item.icon className="h-5 w-5 mt-1 flex-shrink-0" />
                       <div>
                         <div className="font-medium">{item.title}</div>
                         <div className="text-sm text-muted-foreground">{item.description}</div>
                       </div>
-                    </Link>
+                    </button>
                   ))}
                 </div>
                 <div className="flex flex-col space-y-3">
@@ -119,14 +125,7 @@ export function NavMenu() {
                     </Link>
                   ))}
                 </div>
-                <div className="flex flex-col space-y-3">
-                  <div className="font-medium text-sm px-3">// More tools</div>
-                  {moreTools.map((tool) => (
-                    <Link key={tool} href="#" className="text-sm text-muted-foreground hover:text-foreground px-3">
-                      {tool}
-                    </Link>
-                  ))}
-                </div>
+                <DynamicContent selectedItem={selectedContentCreation} />
               </div>
             </div>
           </NavigationMenuContent>
@@ -166,6 +165,34 @@ export function NavMenu() {
       </NavigationMenuList>
       <NavigationMenuViewport className="origin-top-center absolute top-full left-0 mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 md:w-[var(--radix-navigation-menu-viewport-width)]" />
     </NavigationMenu>
+  )
+}
+
+function DynamicContent({ selectedItem }: { selectedItem: string | null }) {
+  if (!selectedItem) {
+    return (
+      <div className="flex flex-col space-y-3">
+        <div className="font-medium text-sm px-3">// More tools</div>
+        {moreTools.map((tool) => (
+          <Link key={tool} href="#" className="text-sm text-muted-foreground hover:text-foreground px-3">
+            {tool}
+          </Link>
+        ))}
+      </div>
+    )
+  }
+
+  const dynamicLinks = ["Getting Started", "Templates", "Best Practices", "Advanced Techniques", "Integration Guide"]
+
+  return (
+    <div className="flex flex-col space-y-3">
+      <div className="font-medium text-sm px-3">{selectedItem}</div>
+      {dynamicLinks.map((link) => (
+        <Link key={link} href="#" className="text-sm text-muted-foreground hover:text-foreground px-3">
+          {link}
+        </Link>
+      ))}
+    </div>
   )
 }
 
